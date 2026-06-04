@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -207,14 +207,30 @@ button{
       ✅ Só libera a próxima fase com 100% de acertos<br>
       ✅ Contas retificadoras, patrimoniais e de resultado<br>
       ✅ Progresso salvo automaticamente<br>
-      📲 Para iniciar, envie seu nome ao professor pelo WhatsApp
+      📲 Para liberar o jogo, envie seu nome ao professor pelo WhatsApp
     </div>
     <label><b>Nome do aluno:</b></label>
     <input id="studentName" placeholder="Digite seu nome">
     <button class="primary" onclick="sendNameToProfessor()">📲 Enviar nome ao professor</button>
-    <button id="liberarBtn" class="green hidden" onclick="startGame()">🔓 Liberar desafio</button>
+    <button id="startChallengeBtn" class="green hidden" onclick="openWelcome()">🔓 Começar desafio</button>
     <button class="secondary" onclick="continueIfReleased()">Continuar de onde parei</button>
     <button class="red" onclick="resetAll()">Reiniciar tudo</button>
+  </section>
+
+  <section id="welcome" class="card hidden">
+    <h2>✅ Desafio Liberado</h2>
+    <div class="medal">🎮</div>
+    <div class="resultBig">Bem-vindo, <span id="welcomeName"></span>!</div>
+    <div class="notice">
+      🏆 Mestre das Contas Contábeis<br>
+      ✅ 8 fases<br>
+      ✅ 80 questões<br>
+      ✅ Só avança com 10 acertos na fase<br>
+      ✅ Contas patrimoniais, retificadoras e de resultado
+    </div>
+    <button class="green" onclick="beginPhase(state.unlocked || 0)">🚀 Iniciar desafio</button>
+    <button class="secondary" onclick="showPhases()">🗺️ Ver fases</button>
+    <button class="dark" onclick="goHome()">Início</button>
   </section>
 
   <section id="phases" class="card hidden">
@@ -400,7 +416,7 @@ function load(){
  }
  document.getElementById("studentName").value = state.name || "";
  if(state.nameSent){
-  const btn = document.getElementById("liberarBtn");
+  const btn = document.getElementById("startChallengeBtn");
   if(btn) btn.classList.remove("hidden");
  }
 }
@@ -413,7 +429,7 @@ function save(){
  }));
 }
 function hideAll(){
- ["home","phases","quiz","result"].forEach(id=>document.getElementById(id).classList.add("hidden"));
+ ["home","welcome","phases","quiz","result"].forEach(id=>document.getElementById(id).classList.add("hidden"));
 }
 function goHome(){
  stopTimer();
@@ -426,25 +442,16 @@ function sendNameToProfessor(){
  state.name = name;
  state.nameSent = true;
  save();
- document.getElementById("liberarBtn").classList.remove("hidden");
+ const btn = document.getElementById("startChallengeBtn");
+ if(btn) btn.classList.remove("hidden");
  const msg = encodeURIComponent(
   `Professor Moreira, meu nome é ${name} e quero iniciar o desafio Mestre das Contas Contábeis.`
  );
  window.open(`https://wa.me/${WHATSAPP_PROFESSOR}?text=${msg}`,"_blank");
 }
 
-function continueIfReleased(){
- const name = document.getElementById("studentName").value.trim();
- if(name){ state.name = name; save(); }
- if(state.nameSent){
-  showPhases();
- }else{
-  alert("Primeiro envie seu nome ao professor pelo WhatsApp para liberar o desafio.");
- }
-}
-
-function startGame(){
- const name = document.getElementById("studentName").value.trim();
+function openWelcome(){
+ const name = document.getElementById("studentName").value.trim() || state.name;
  if(!name){ alert("Digite o nome do aluno."); return; }
  if(!state.nameSent){
   alert("Primeiro envie seu nome ao professor pelo WhatsApp.");
@@ -452,7 +459,23 @@ function startGame(){
  }
  state.name = name;
  save();
- showPhases();
+ hideAll();
+ document.getElementById("welcomeName").textContent = state.name;
+ document.getElementById("welcome").classList.remove("hidden");
+}
+
+function continueIfReleased(){
+ const name = document.getElementById("studentName").value.trim();
+ if(name){ state.name = name; save(); }
+ if(state.nameSent){
+  openWelcome();
+ }else{
+  alert("Primeiro envie seu nome ao professor pelo WhatsApp para liberar o desafio.");
+ }
+}
+
+function startGame(){
+ openWelcome();
 }
 function showPhases(){
  stopTimer();
