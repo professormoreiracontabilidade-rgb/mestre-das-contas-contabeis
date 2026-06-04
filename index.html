@@ -1,0 +1,617 @@
+!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mestre das Contas Contábeis</title>
+<style>
+:root{
+  --vinho:#4a0712;
+  --vinho2:#7f1d1d;
+  --ouro:#facc15;
+  --claro:#fff7ed;
+  --verde:#16a34a;
+  --vermelho:#dc2626;
+  --azul:#1d4ed8;
+  --cinza:#e5e7eb;
+  --texto:#111827;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:linear-gradient(160deg,#2b0308,#7f1d1d,#4a0712);
+  color:var(--texto);
+  min-height:100vh;
+}
+.app{
+  width:100%;
+  max-width:520px;
+  margin:0 auto;
+  min-height:100vh;
+  padding:12px;
+}
+.card{
+  background:#fff;
+  border-radius:22px;
+  padding:18px;
+  box-shadow:0 18px 40px rgba(0,0,0,.25);
+  border:4px solid #f3d7a3;
+}
+.header{
+  color:#fff;
+  text-align:center;
+  padding:12px 6px 16px;
+}
+.header h1{
+  margin:6px 0 4px;
+  font-size:26px;
+  line-height:1.1;
+}
+.header p{
+  margin:0;
+  font-size:14px;
+  opacity:.95;
+}
+.badge{
+  display:inline-block;
+  background:var(--ouro);
+  color:#3b0707;
+  padding:6px 12px;
+  border-radius:999px;
+  font-weight:bold;
+  font-size:13px;
+}
+input{
+  width:100%;
+  padding:15px;
+  border:2px solid #d1d5db;
+  border-radius:14px;
+  font-size:18px;
+  margin:10px 0;
+}
+button{
+  border:none;
+  border-radius:14px;
+  padding:13px 14px;
+  font-size:17px;
+  font-weight:bold;
+  cursor:pointer;
+  width:100%;
+  margin:6px 0;
+}
+.primary{background:var(--vinho2);color:#fff}
+.secondary{background:#fef3c7;color:#4a0712}
+.dark{background:#111827;color:#fff}
+.green{background:var(--verde);color:#fff}
+.red{background:var(--vermelho);color:#fff}
+.blue{background:var(--azul);color:#fff}
+.smallbtn{font-size:14px;padding:10px;margin:4px 0}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.phase{
+  border:2px solid #e5e7eb;
+  border-radius:16px;
+  padding:12px;
+  background:#fffaf0;
+  min-height:98px;
+}
+.phase.locked{opacity:.48;background:#f3f4f6}
+.phase.done{border-color:var(--verde);background:#ecfdf5}
+.phase h3{margin:0 0 6px;font-size:16px}
+.phase p{margin:0;font-size:13px}
+.phase .status{font-size:24px;margin-top:5px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-bottom:10px;
+  font-weight:bold;
+}
+.progress{
+  height:16px;
+  background:#e5e7eb;
+  border-radius:999px;
+  overflow:hidden;
+  margin:10px 0;
+}
+.progress div{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#16a34a,#facc15);
+  transition:.3s;
+}
+.question{
+  font-size:23px;
+  font-weight:bold;
+  line-height:1.22;
+  margin:16px 0 14px;
+  color:#3b0710;
+}
+.option{
+  background:#fff;
+  border:3px solid #e5e7eb;
+  text-align:left;
+  color:#111827;
+}
+.option.correct{background:#dcfce7;border-color:var(--verde)}
+.option.wrong{background:#fee2e2;border-color:var(--vermelho)}
+.comment{
+  background:#fff7ed;
+  border-left:7px solid var(--ouro);
+  padding:12px;
+  border-radius:12px;
+  font-size:17px;
+  line-height:1.35;
+  margin:12px 0;
+}
+.hidden{display:none}
+.resultBig{
+  text-align:center;
+  font-size:28px;
+  font-weight:bold;
+  color:#3b0710;
+}
+.footerNav{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:6px;
+  margin-top:10px;
+}
+.footerNav button{font-size:13px;padding:10px}
+.medal{
+  font-size:48px;
+  text-align:center;
+}
+.cert{
+  border:4px dashed var(--vinho2);
+  padding:20px;
+  border-radius:20px;
+  text-align:center;
+  background:#fffaf0;
+}
+.cert h2{color:var(--vinho2)}
+.notice{
+  background:#fef3c7;
+  border-radius:16px;
+  padding:12px;
+  margin:10px 0;
+  font-size:15px;
+  line-height:1.4;
+}
+@media print{
+  body{background:white}
+  .app{max-width:100%;padding:0}
+  button,.footerNav,.header{display:none}
+  .card{box-shadow:none;border:2px solid #333}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <span class="badge">Curso de Contabilidade Professor Moreira</span>
+    <h1>🎮 Mestre das Contas Contábeis</h1>
+    <p>Só avança quem acerta todas as questões da fase.</p>
+  </div>
+
+  <section id="home" class="card">
+    <h2>🏁 Início do Desafio</h2>
+    <div class="notice">
+      ✅ 8 fases<br>
+      ✅ 10 questões por fase<br>
+      ✅ Só libera a próxima fase com 100% de acertos<br>
+      ✅ Contas retificadoras, patrimoniais e de resultado<br>
+      ✅ Progresso salvo automaticamente<br>
+      📲 Para iniciar, envie seu nome ao professor pelo WhatsApp
+    </div>
+    <label><b>Nome do aluno:</b></label>
+    <input id="studentName" placeholder="Digite seu nome">
+    <button class="primary" onclick="sendNameToProfessor()">📲 Enviar nome ao professor</button>
+    <button id="liberarBtn" class="green hidden" onclick="startGame()">🔓 Liberar desafio</button>
+    <button class="secondary" onclick="continueIfReleased()">Continuar de onde parei</button>
+    <button class="red" onclick="resetAll()">Reiniciar tudo</button>
+  </section>
+
+  <section id="phases" class="card hidden">
+    <h2>🗺️ Fases do Jogo</h2>
+    <div id="phaseGrid" class="grid"></div>
+    <button class="dark" onclick="goHome()">Início</button>
+  </section>
+
+  <section id="quiz" class="card hidden">
+    <div class="topbar">
+      <span id="phaseTitle"></span>
+      <span id="timer">⏱️ 00:00</span>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+    <div id="qCount"></div>
+    <div id="questionText" class="question"></div>
+    <div id="options"></div>
+    <div id="feedback" class="comment hidden"></div>
+    <button id="nextBtn" class="green hidden" onclick="nextQuestion()">Próxima</button>
+    <div class="footerNav">
+      <button class="smallbtn dark" onclick="showPhases()">Fases</button>
+      <button class="smallbtn secondary" onclick="restartPhase()">Refazer fase</button>
+      <button class="smallbtn red" onclick="goHome()">Início</button>
+    </div>
+  </section>
+
+  <section id="result" class="card hidden">
+    <div id="resultContent"></div>
+  </section>
+</div>
+
+<script>
+const WHATSAPP_PROFESSOR = "5561985323574";
+
+const phases = [
+{
+ title:"Fase 1 – Classificação das Contas",
+ desc:"Identifique o grupo contábil.",
+ questions:[
+  {q:"Ajuste para Perdas Estimadas com Créditos de Liquidação Duvidosa pertence a qual grupo?", o:["Ativo – conta retificadora","Passivo exigível","Receita operacional","Patrimônio Líquido"], a:0, c:"É conta retificadora do Ativo, pois reduz o valor de contas a receber."},
+  {q:"Provisão para Contingências normalmente é classificada como:", o:["Ativo Circulante","Passivo","Receita","Conta retificadora do PL"], a:1, c:"Representa obrigação provável e mensurável, portanto é Passivo."},
+  {q:"Reserva Legal pertence ao grupo:", o:["Ativo","Passivo","Patrimônio Líquido","Despesa"], a:2, c:"Reserva Legal é reserva de lucros, classificada no Patrimônio Líquido."},
+  {q:"Receita Financeira é uma conta de:", o:["Ativo","Resultado – receita","Passivo","Retificadora do ativo"], a:1, c:"Receita Financeira aumenta o resultado do período."},
+  {q:"Despesa Financeira é uma conta de:", o:["Resultado – despesa","Ativo","Patrimônio Líquido","Receita diferida"], a:0, c:"Despesa Financeira reduz o resultado do período."},
+  {q:"ICMS a Recuperar é classificado como:", o:["Passivo","Ativo","Receita","Patrimônio Líquido"], a:1, c:"Imposto a recuperar representa direito da empresa, portanto Ativo."},
+  {q:"Adiantamento de Clientes representa:", o:["Ativo","Passivo","Despesa","Receita financeira"], a:1, c:"A empresa recebeu antes de entregar o bem ou serviço; é obrigação, logo Passivo."},
+  {q:"Dividendos a Pagar é conta de:", o:["Ativo","Passivo","Despesa","Receita"], a:1, c:"Dividendos a pagar representam obrigação da entidade com os sócios."},
+  {q:"Capital a Integralizar é:", o:["Conta retificadora do Patrimônio Líquido","Receita","Passivo circulante","Ativo realizável"], a:0, c:"Reduz o Capital Social até que os sócios integralizem o valor."},
+  {q:"Ações em Tesouraria são classificadas como:", o:["Ativo financeiro","Conta retificadora do Patrimônio Líquido","Receita de capital","Passivo"], a:1, c:"Ações em tesouraria reduzem o Patrimônio Líquido."}
+ ]
+},
+{
+ title:"Fase 2 – Natureza Devedora ou Credora",
+ desc:"Identifique se aumenta por débito ou crédito.",
+ questions:[
+  {q:"A conta Fornecedores aumenta por:", o:["Débito","Crédito"], a:1, c:"Fornecedores é Passivo. Contas do Passivo aumentam por crédito."},
+  {q:"Capital Social aumenta por:", o:["Débito","Crédito"], a:1, c:"Capital Social é Patrimônio Líquido. PL aumenta por crédito."},
+  {q:"Depreciação Acumulada aumenta por:", o:["Débito","Crédito"], a:1, c:"É retificadora do Ativo, mas sua natureza é credora."},
+  {q:"Receita de Vendas aumenta por:", o:["Débito","Crédito"], a:1, c:"Receitas possuem natureza credora."},
+  {q:"Despesa com Salários aumenta por:", o:["Débito","Crédito"], a:0, c:"Despesas possuem natureza devedora."},
+  {q:"Reserva de Lucros aumenta por:", o:["Débito","Crédito"], a:1, c:"Reserva de Lucros integra o Patrimônio Líquido, que aumenta por crédito."},
+  {q:"Juros Ativos aumentam por:", o:["Débito","Crédito"], a:1, c:"Juros ativos são receitas financeiras; receitas aumentam por crédito."},
+  {q:"Juros Passivos aumentam por:", o:["Débito","Crédito"], a:0, c:"Juros passivos são despesas financeiras; despesas aumentam por débito."},
+  {q:"Ajuste de Avaliação Patrimonial, quando positivo, aumenta por:", o:["Débito","Crédito"], a:1, c:"Quando aumenta o PL, o lançamento é a crédito."},
+  {q:"PECLD aumenta por:", o:["Débito","Crédito"], a:1, c:"A PECLD é retificadora do Ativo e possui natureza credora."}
+ ]
+},
+{
+ title:"Fase 3 – Contas Retificadoras",
+ desc:"Identifique a conta redutora.",
+ questions:[
+  {q:"Depreciação Acumulada é retificadora de:", o:["Ativo Imobilizado","Passivo","Receita","Despesa"], a:0, c:"Reduz o valor contábil do Ativo Imobilizado."},
+  {q:"Amortização Acumulada é retificadora de:", o:["Ativo Intangível","Passivo","Patrimônio Líquido","Receita"], a:0, c:"Reduz o valor contábil dos ativos intangíveis amortizáveis."},
+  {q:"Exaustão Acumulada é retificadora de:", o:["Recursos naturais no Ativo","Receitas","Fornecedores","Capital Social"], a:0, c:"É usada em ativos sujeitos à exaustão, como recursos minerais/florestais."},
+  {q:"Capital a Integralizar retifica:", o:["Capital Social","Caixa","Fornecedores","Receita de vendas"], a:0, c:"Enquanto não integralizado, reduz o capital subscrito."},
+  {q:"Ações em Tesouraria retificam:", o:["Patrimônio Líquido","Ativo Circulante","Passivo Circulante","Receita"], a:0, c:"São ações da própria empresa recompradas e reduzem o PL."},
+  {q:"PECLD retifica principalmente:", o:["Clientes/Duplicatas a Receber","Fornecedores","Capital Social","Receitas"], a:0, c:"Reduz o valor recuperável dos créditos a receber."},
+  {q:"Perdas Estimadas em Estoques retificam:", o:["Estoques","Salários a pagar","Receita de serviços","Reserva legal"], a:0, c:"Reduzem o valor dos estoques ao valor recuperável/realizável."},
+  {q:"Deságio a Apropriar em empréstimos pode funcionar como:", o:["Conta redutora do Passivo","Receita operacional","Ativo imobilizado","Despesa antecipada"], a:0, c:"Em certos controles, reduz o valor contábil do passivo financeiro até apropriação."},
+  {q:"Juros a Transcorrer em financiamento costumam ser:", o:["Retificadora do Passivo","Receita financeira","Despesa administrativa","Conta de estoque"], a:0, c:"Reduzem o valor presente da obrigação até a apropriação dos juros."},
+  {q:"Duplicatas Descontadas, no tratamento tradicional didático, podem ser apresentadas como:", o:["Retificadora do Ativo","Reserva de lucros","Receita","Despesa"], a:0, c:"Em muitas abordagens didáticas, aparece reduzindo duplicatas a receber; normas atuais podem tratar como passivo financeiro."}
+ ]
+},
+{
+ title:"Fase 4 – Contas de Resultado",
+ desc:"Receita ou despesa?",
+ questions:[
+  {q:"Receita de Serviços é:", o:["Receita","Despesa"], a:0, c:"É ingresso decorrente da prestação de serviços."},
+  {q:"Despesa com Depreciação é:", o:["Receita","Despesa"], a:1, c:"Representa consumo econômico do ativo imobilizado."},
+  {q:"Ganho na Venda de Imobilizado é:", o:["Receita/Ganho","Despesa/Perda"], a:0, c:"Se a venda gera ganho, aumenta o resultado."},
+  {q:"Perda na Venda de Imobilizado é:", o:["Receita/Ganho","Despesa/Perda"], a:1, c:"Se há perda, reduz o resultado."},
+  {q:"Receita de Juros é:", o:["Receita","Despesa"], a:0, c:"Juros recebidos ou a receber aumentam o resultado."},
+  {q:"Despesa de Juros é:", o:["Receita","Despesa"], a:1, c:"Juros incorridos em obrigações reduzem o resultado."},
+  {q:"Despesa de Aluguéis é:", o:["Receita","Despesa"], a:1, c:"Aluguel usado pela empresa é gasto que reduz o resultado."},
+  {q:"Receita de Vendas é:", o:["Receita","Despesa"], a:0, c:"Venda de mercadorias/produtos gera receita."},
+  {q:"CMV – Custo das Mercadorias Vendidas é:", o:["Receita","Despesa/Custo no resultado"], a:1, c:"O CMV é confrontado com a receita e reduz o resultado."},
+  {q:"Descontos Concedidos são normalmente:", o:["Despesa/Dedução","Ativo"], a:0, c:"Descontos concedidos reduzem receita ou são despesa, conforme o caso."}
+ ]
+},
+{
+ title:"Fase 5 – Pegadinhas de Concurso",
+ desc:"Contas que confundem.",
+ questions:[
+  {q:"ICMS a Recuperar representa:", o:["Direito – Ativo","Obrigação – Passivo","Receita","Despesa"], a:0, c:"É imposto recuperável/compensável; representa direito."},
+  {q:"ICMS a Recolher representa:", o:["Ativo","Passivo","Receita","Despesa"], a:1, c:"É obrigação com o Fisco."},
+  {q:"Adiantamento a Fornecedores é:", o:["Ativo","Passivo","Receita","Despesa"], a:0, c:"A empresa pagou antes e tem direito a receber mercadoria/serviço."},
+  {q:"Adiantamento de Clientes é:", o:["Ativo","Passivo","Despesa","PL"], a:1, c:"A empresa recebeu antes e tem obrigação de entregar."},
+  {q:"Despesas Antecipadas são:", o:["Ativo","Passivo","Despesa imediata","Receita"], a:0, c:"Enquanto não consumidas, representam benefício futuro."},
+  {q:"Receitas Antecipadas são:", o:["Ativo","Passivo","Receita imediata","Despesa"], a:1, c:"Enquanto não realizadas, representam obrigação de entregar bens/serviços."},
+  {q:"Provisão para IRPJ é:", o:["Passivo","Ativo","Receita","Retificadora do PL"], a:0, c:"É obrigação tributária estimada."},
+  {q:"Dividendos Propostos, quando obrigatórios, são normalmente:", o:["Passivo","Ativo","Despesa","Receita"], a:0, c:"Dividendos obrigatórios geram obrigação com acionistas."},
+  {q:"Juros sobre Capital Próprio a Pagar é:", o:["Passivo","Ativo","Receita","Estoque"], a:0, c:"Representa obrigação de pagamento aos sócios/acionistas."},
+  {q:"Empréstimos a Pagar são:", o:["Passivo","Ativo","Receita","Despesa"], a:0, c:"Representam obrigação financeira da empresa."}
+ ]
+},
+{
+ title:"Fase 6 – Débito ou Crédito na Prática",
+ desc:"Qual lado aumenta?",
+ questions:[
+  {q:"Compra de mercadorias à vista: a conta Estoques aumenta por:", o:["Débito","Crédito"], a:0, c:"Estoques é Ativo. Ativo aumenta por débito."},
+  {q:"Compra de mercadorias a prazo: Fornecedores aumenta por:", o:["Débito","Crédito"], a:1, c:"Fornecedores é Passivo. Passivo aumenta por crédito."},
+  {q:"Pagamento de fornecedor: Fornecedores diminui por:", o:["Débito","Crédito"], a:0, c:"Passivo diminui por débito."},
+  {q:"Recebimento de cliente em dinheiro: Caixa aumenta por:", o:["Débito","Crédito"], a:0, c:"Caixa é Ativo. Ativo aumenta por débito."},
+  {q:"Venda a prazo: Clientes aumenta por:", o:["Débito","Crédito"], a:0, c:"Clientes é Ativo. Ativo aumenta por débito."},
+  {q:"Reconhecimento de Receita de Serviços: Receita aumenta por:", o:["Débito","Crédito"], a:1, c:"Receitas aumentam por crédito."},
+  {q:"Reconhecimento de Despesa com Salários: Despesa aumenta por:", o:["Débito","Crédito"], a:0, c:"Despesas aumentam por débito."},
+  {q:"Integralização de capital em dinheiro: Capital Social aumenta por:", o:["Débito","Crédito"], a:1, c:"Capital Social é PL e aumenta por crédito."},
+  {q:"Registro de depreciação: Depreciação Acumulada aumenta por:", o:["Débito","Crédito"], a:1, c:"Depreciação Acumulada é retificadora do Ativo, de natureza credora."},
+  {q:"Constituição de PECLD: PECLD aumenta por:", o:["Débito","Crédito"], a:1, c:"PECLD é retificadora do Ativo, de natureza credora."}
+ ]
+},
+{
+ title:"Fase 7 – Mistura Geral",
+ desc:"Classificação, natureza e resultado.",
+ questions:[
+  {q:"Salários a Pagar é conta de:", o:["Passivo","Ativo","Despesa","Receita"], a:0, c:"Representa obrigação com empregados."},
+  {q:"Despesa com Salários possui natureza:", o:["Devedora","Credora"], a:0, c:"Despesas têm natureza devedora."},
+  {q:"Reserva Estatutária pertence ao:", o:["Patrimônio Líquido","Passivo","Ativo","Resultado"], a:0, c:"É reserva do Patrimônio Líquido."},
+  {q:"Receita de Aluguéis aumenta por:", o:["Débito","Crédito"], a:1, c:"Receitas aumentam por crédito."},
+  {q:"Aluguéis a Receber é:", o:["Ativo","Passivo","Despesa","PL"], a:0, c:"É direito da empresa, portanto Ativo."},
+  {q:"Aluguéis a Pagar é:", o:["Passivo","Ativo","Receita","PL"], a:0, c:"É obrigação da empresa, portanto Passivo."},
+  {q:"Prêmios de Seguros a Apropriar são:", o:["Ativo","Passivo","Receita","Despesa financeira"], a:0, c:"Seguro pago antecipadamente é despesa antecipada, classificada no Ativo."},
+  {q:"Duplicatas a Receber é conta de natureza:", o:["Devedora","Credora"], a:0, c:"É Ativo, portanto aumenta por débito."},
+  {q:"Duplicatas a Pagar é conta de natureza:", o:["Devedora","Credora"], a:1, c:"É Passivo, portanto aumenta por crédito."},
+  {q:"Custo dos Serviços Prestados é conta de:", o:["Resultado","Ativo","Passivo","PL"], a:0, c:"É custo reconhecido no resultado."}
+ ]
+},
+{
+ title:"Fase 8 – Desafio Final",
+ desc:"Só para quem virou mestre.",
+ questions:[
+  {q:"Capital a Integralizar possui natureza:", o:["Devedora","Credora"], a:0, c:"É retificadora do PL, logo tem natureza devedora."},
+  {q:"Ações em Tesouraria possuem natureza:", o:["Devedora","Credora"], a:0, c:"Retificam o PL e possuem natureza devedora."},
+  {q:"Depreciação Acumulada é:", o:["Retificadora do Ativo","Despesa","Receita","Passivo"], a:0, c:"É conta redutora do Ativo Imobilizado."},
+  {q:"Despesa com Depreciação é:", o:["Conta de resultado","Conta retificadora do ativo","Passivo","PL"], a:0, c:"A despesa com depreciação vai ao resultado."},
+  {q:"Receita Antecipada antes da prestação do serviço é:", o:["Passivo","Receita definitiva","Ativo","Despesa"], a:0, c:"Ainda há obrigação de prestar o serviço."},
+  {q:"PECLD é conta de natureza:", o:["Credora","Devedora"], a:0, c:"É retificadora do Ativo, portanto credora."},
+  {q:"ICMS a Recolher aumenta por:", o:["Débito","Crédito"], a:1, c:"É Passivo; aumenta por crédito."},
+  {q:"ICMS a Recuperar aumenta por:", o:["Débito","Crédito"], a:0, c:"É Ativo; aumenta por débito."},
+  {q:"Receita Financeira aumenta por:", o:["Débito","Crédito"], a:1, c:"Receitas têm natureza credora."},
+  {q:"Despesa Financeira aumenta por:", o:["Débito","Crédito"], a:0, c:"Despesas têm natureza devedora."}
+ ]
+}
+];
+
+let state = {
+ name:"",
+ unlocked:0,
+ completed:[],
+ currentPhase:0,
+ currentQuestion:0,
+ score:0,
+ answers:[],
+ seconds:0,
+ nameSent:false,
+ timerId:null
+};
+
+function load(){
+ const saved = localStorage.getItem("mestreContasState");
+ if(saved){
+  try{ state = {...state, ...JSON.parse(saved)}; }catch(e){}
+ }
+ document.getElementById("studentName").value = state.name || "";
+ if(state.nameSent){
+  const btn = document.getElementById("liberarBtn");
+  if(btn) btn.classList.remove("hidden");
+ }
+}
+function save(){
+ localStorage.setItem("mestreContasState", JSON.stringify({
+  name:state.name,
+  unlocked:state.unlocked,
+  completed:state.completed,
+  nameSent:state.nameSent
+ }));
+}
+function hideAll(){
+ ["home","phases","quiz","result"].forEach(id=>document.getElementById(id).classList.add("hidden"));
+}
+function goHome(){
+ stopTimer();
+ hideAll();
+ document.getElementById("home").classList.remove("hidden");
+}
+function sendNameToProfessor(){
+ const name = document.getElementById("studentName").value.trim();
+ if(!name){ alert("Digite o nome do aluno antes de enviar."); return; }
+ state.name = name;
+ state.nameSent = true;
+ save();
+ document.getElementById("liberarBtn").classList.remove("hidden");
+ const msg = encodeURIComponent(
+  `Professor Moreira, meu nome é ${name} e quero iniciar o desafio Mestre das Contas Contábeis.`
+ );
+ window.open(`https://wa.me/${WHATSAPP_PROFESSOR}?text=${msg}`,"_blank");
+}
+
+function continueIfReleased(){
+ const name = document.getElementById("studentName").value.trim();
+ if(name){ state.name = name; save(); }
+ if(state.nameSent){
+  showPhases();
+ }else{
+  alert("Primeiro envie seu nome ao professor pelo WhatsApp para liberar o desafio.");
+ }
+}
+
+function startGame(){
+ const name = document.getElementById("studentName").value.trim();
+ if(!name){ alert("Digite o nome do aluno."); return; }
+ if(!state.nameSent){
+  alert("Primeiro envie seu nome ao professor pelo WhatsApp.");
+  return;
+ }
+ state.name = name;
+ save();
+ showPhases();
+}
+function showPhases(){
+ stopTimer();
+ hideAll();
+ const grid = document.getElementById("phaseGrid");
+ grid.innerHTML = "";
+ phases.forEach((p,i)=>{
+  const locked = i > state.unlocked;
+  const done = state.completed.includes(i);
+  const div = document.createElement("div");
+  div.className = "phase " + (locked?"locked ":"") + (done?"done":"");
+  div.innerHTML = `<h3>${p.title}</h3><p>${p.desc}</p><div class="status">${done?"🏆":locked?"🔒":"🎯"}</div>`;
+  div.onclick = ()=>{ if(!locked) beginPhase(i); };
+  grid.appendChild(div);
+ });
+ document.getElementById("phases").classList.remove("hidden");
+}
+function beginPhase(i){
+ state.currentPhase = i;
+ state.currentQuestion = 0;
+ state.score = 0;
+ state.answers = [];
+ state.seconds = 0;
+ hideAll();
+ document.getElementById("quiz").classList.remove("hidden");
+ startTimer();
+ renderQuestion();
+}
+function renderQuestion(){
+ const p = phases[state.currentPhase];
+ const q = p.questions[state.currentQuestion];
+ document.getElementById("phaseTitle").textContent = p.title;
+ document.getElementById("qCount").textContent = `Questão ${state.currentQuestion+1} de ${p.questions.length} | Acertos: ${state.score}`;
+ document.getElementById("bar").style.width = `${(state.currentQuestion/p.questions.length)*100}%`;
+ document.getElementById("questionText").textContent = q.q;
+ document.getElementById("feedback").classList.add("hidden");
+ document.getElementById("nextBtn").classList.add("hidden");
+ const opt = document.getElementById("options");
+ opt.innerHTML = "";
+ q.o.forEach((text,idx)=>{
+  const b = document.createElement("button");
+  b.className = "option";
+  b.textContent = String.fromCharCode(65+idx)+") "+text;
+  b.onclick = ()=>answer(idx,b);
+  opt.appendChild(b);
+ });
+}
+function answer(idx,btn){
+ const p = phases[state.currentPhase];
+ const q = p.questions[state.currentQuestion];
+ const buttons = document.querySelectorAll(".option");
+ buttons.forEach(b=>b.disabled=true);
+ if(idx === q.a){
+  btn.classList.add("correct");
+  state.score++;
+  state.answers.push("C");
+ }else{
+  btn.classList.add("wrong");
+  buttons[q.a].classList.add("correct");
+  state.answers.push("E");
+ }
+ const fb = document.getElementById("feedback");
+ fb.innerHTML = (idx===q.a ? "✅ <b>Correto!</b><br>" : "❌ <b>Errado.</b><br>") + q.c;
+ fb.classList.remove("hidden");
+ document.getElementById("nextBtn").classList.remove("hidden");
+ document.getElementById("qCount").textContent = `Questão ${state.currentQuestion+1} de ${p.questions.length} | Acertos: ${state.score}`;
+}
+function nextQuestion(){
+ const p = phases[state.currentPhase];
+ state.currentQuestion++;
+ if(state.currentQuestion >= p.questions.length){
+  finishPhase();
+ }else{
+  renderQuestion();
+ }
+}
+function finishPhase(){
+ stopTimer();
+ const p = phases[state.currentPhase];
+ document.getElementById("bar").style.width = "100%";
+ hideAll();
+ const passed = state.score === p.questions.length;
+ let html = "";
+ if(passed){
+  if(!state.completed.includes(state.currentPhase)) state.completed.push(state.currentPhase);
+  if(state.currentPhase === state.unlocked && state.unlocked < phases.length-1) state.unlocked++;
+  save();
+  if(state.currentPhase === phases.length-1){
+   html = `
+   <div class="cert">
+    <div class="medal">🏆</div>
+    <h2>Certificado de Conclusão</h2>
+    <p>Certifico que <b>${state.name}</b> concluiu o desafio:</p>
+    <h3>Mestre das Contas Contábeis</h3>
+    <p>Resultado final: ${state.score}/${p.questions.length} na última fase.</p>
+    <p>Tempo: ${formatTime(state.seconds)}</p>
+   </div>
+   <button class="green" onclick="sendWhatsApp()">Enviar progresso ao professor</button>
+   <button class="blue" onclick="window.print()">Imprimir certificado</button>
+   <button class="dark" onclick="showPhases()">Voltar às fases</button>`;
+  }else{
+   html = `
+   <div class="medal">🏆</div>
+   <div class="resultBig">Fase concluída!</div>
+   <p>Parabéns, <b>${state.name}</b>! Você acertou ${state.score}/${p.questions.length}.</p>
+   <p>Próxima fase desbloqueada.</p>
+   <button class="green" onclick="beginPhase(${state.currentPhase+1})">Ir para próxima fase</button>
+   <button class="secondary" onclick="sendWhatsApp()">Enviar progresso ao professor</button>
+   <button class="dark" onclick="showPhases()">Ver fases</button>`;
+  }
+ }else{
+  html = `
+  <div class="medal">💪</div>
+  <div class="resultBig">Ainda não venceu a fase</div>
+  <p><b>${state.name}</b>, você acertou ${state.score}/${p.questions.length}.</p>
+  <div class="notice">Regra do jogo: só passa de fase com 10 acertos. Revise os comentários e tente novamente.</div>
+  <button class="red" onclick="beginPhase(${state.currentPhase})">Refazer esta fase</button>
+  <button class="dark" onclick="showPhases()">Voltar às fases</button>`;
+ }
+ document.getElementById("resultContent").innerHTML = html;
+ document.getElementById("result").classList.remove("hidden");
+}
+function restartPhase(){
+ if(confirm("Refazer esta fase desde o início?")) beginPhase(state.currentPhase);
+}
+function resetAll(){
+ if(confirm("Tem certeza que deseja apagar todo o progresso?")){
+  localStorage.removeItem("mestreContasState");
+  location.reload();
+ }
+}
+function startTimer(){
+ stopTimer();
+ state.timerId = setInterval(()=>{
+  state.seconds++;
+  document.getElementById("timer").textContent = "⏱️ " + formatTime(state.seconds);
+ },1000);
+}
+function stopTimer(){
+ if(state.timerId){ clearInterval(state.timerId); state.timerId=null; }
+}
+function formatTime(s){
+ const m = Math.floor(s/60).toString().padStart(2,"0");
+ const sec = (s%60).toString().padStart(2,"0");
+ return `${m}:${sec}`;
+}
+function sendWhatsApp(){
+ const msg = encodeURIComponent(
+  `Professor Moreira, segue meu progresso no jogo Mestre das Contas Contábeis:%0A`+
+  `Aluno: ${state.name}%0A`+
+  `Fase atual: ${phases[state.currentPhase].title}%0A`+
+  `Resultado: ${state.score}/10%0A`+
+  `Fases concluídas: ${state.completed.length}/8`
+ );
+ window.open(`https://wa.me/${WHATSAPP_PROFESSOR}?text=${msg}`,"_blank");
+}
+load();
+</script>
+</body>
+</html>
+
+
