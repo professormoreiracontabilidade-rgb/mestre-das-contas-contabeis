@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mestre das Contas Contábeis</title>
+<title>Mestre das Contas Contábeis - Sem Travas</title>
 <style>
 :root{
   --vinho:#4a0712;
@@ -196,7 +196,7 @@ button{
   <div class="header">
     <span class="badge">Curso de Contabilidade Professor Moreira</span>
     <h1>🎮 Mestre das Contas Contábeis</h1>
-    <p>Só avança quem acerta todas as questões da fase.</p>
+    <p>Versão sem travas: todas as fases liberadas.</p>
   </div>
 
   <section id="home" class="card">
@@ -207,13 +207,12 @@ button{
       ✅ Só libera a próxima fase com 100% de acertos<br>
       ✅ Contas retificadoras, patrimoniais e de resultado<br>
       ✅ Progresso salvo automaticamente<br>
-      📲 Para liberar o jogo, envie seu nome ao professor pelo WhatsApp
+      🔓 Sem trava: o aluno pode começar direto
     </div>
     <label><b>Nome do aluno:</b></label>
     <input id="studentName" placeholder="Digite seu nome">
-    <button class="primary" onclick="sendNameToProfessor()">📲 Enviar nome ao professor</button>
-    <button id="startChallengeBtn" class="green hidden" onclick="openWelcome()">🔓 Começar desafio</button>
-    <button class="secondary" onclick="continueIfReleased()">Continuar de onde parei</button>
+    <button id="startChallengeBtn" class="green" onclick="openWelcome()">🔓 Começar desafio</button>
+    <button class="secondary" onclick="showPhases()">🗺️ Ver todas as fases</button>
     <button class="red" onclick="resetAll()">Reiniciar tudo</button>
   </section>
 
@@ -225,7 +224,7 @@ button{
       🏆 Mestre das Contas Contábeis<br>
       ✅ 8 fases<br>
       ✅ 80 questões<br>
-      ✅ Só avança com 10 acertos na fase<br>
+      ✅ Todas as fases liberadas<br>
       ✅ Contas patrimoniais, retificadoras e de resultado
     </div>
     <button class="green" onclick="beginPhase(state.unlocked || 0)">🚀 Iniciar desafio</button>
@@ -398,14 +397,14 @@ const phases = [
 
 let state = {
  name:"",
- unlocked:0,
+ unlocked:7,
  completed:[],
  currentPhase:0,
  currentQuestion:0,
  score:0,
  answers:[],
  seconds:0,
- nameSent:false,
+ nameSent:true,
  timerId:null
 };
 
@@ -423,7 +422,7 @@ function load(){
 function save(){
  localStorage.setItem("mestreContasState", JSON.stringify({
   name:state.name,
-  unlocked:state.unlocked,
+  unlocked:phases.length-1,
   completed:state.completed,
   nameSent:state.nameSent
  }));
@@ -451,13 +450,10 @@ function sendNameToProfessor(){
 }
 
 function openWelcome(){
- const name = document.getElementById("studentName").value.trim() || state.name;
- if(!name){ alert("Digite o nome do aluno."); return; }
- if(!state.nameSent){
-  alert("Primeiro envie seu nome ao professor pelo WhatsApp.");
-  return;
- }
+ const name = document.getElementById("studentName").value.trim() || state.name || "Aluno";
  state.name = name;
+ state.nameSent = true;
+ if(state.unlocked < phases.length-1) state.unlocked = phases.length-1;
  save();
  hideAll();
  document.getElementById("welcomeName").textContent = state.name;
@@ -467,11 +463,7 @@ function openWelcome(){
 function continueIfReleased(){
  const name = document.getElementById("studentName").value.trim();
  if(name){ state.name = name; save(); }
- if(state.nameSent){
-  openWelcome();
- }else{
-  alert("Primeiro envie seu nome ao professor pelo WhatsApp para liberar o desafio.");
- }
+ openWelcome();
 }
 
 function startGame(){
@@ -483,12 +475,12 @@ function showPhases(){
  const grid = document.getElementById("phaseGrid");
  grid.innerHTML = "";
  phases.forEach((p,i)=>{
-  const locked = i > state.unlocked;
+  const locked = false;
   const done = state.completed.includes(i);
   const div = document.createElement("div");
-  div.className = "phase " + (locked?"locked ":"") + (done?"done":"");
-  div.innerHTML = `<h3>${p.title}</h3><p>${p.desc}</p><div class="status">${done?"🏆":locked?"🔒":"🎯"}</div>`;
-  div.onclick = ()=>{ if(!locked) beginPhase(i); };
+  div.className = "phase " + (done?"done":"");
+  div.innerHTML = `<h3>${p.title}</h3><p>${p.desc}</p><div class="status">${done?"🏆":"🎯"}</div>`;
+  div.onclick = ()=>beginPhase(i);
   grid.appendChild(div);
  });
  document.getElementById("phases").classList.remove("hidden");
@@ -561,7 +553,7 @@ function finishPhase(){
  let html = "";
  if(passed){
   if(!state.completed.includes(state.currentPhase)) state.completed.push(state.currentPhase);
-  if(state.currentPhase === state.unlocked && state.unlocked < phases.length-1) state.unlocked++;
+  state.unlocked = phases.length-1;
   save();
   if(state.currentPhase === phases.length-1){
    html = `
@@ -581,7 +573,7 @@ function finishPhase(){
    <div class="medal">🏆</div>
    <div class="resultBig">Fase concluída!</div>
    <p>Parabéns, <b>${state.name}</b>! Você acertou ${state.score}/${p.questions.length}.</p>
-   <p>Próxima fase desbloqueada.</p>
+   <p>Todas as fases já estão liberadas.</p>
    <button class="green" onclick="beginPhase(${state.currentPhase+1})">Ir para próxima fase</button>
    <button class="secondary" onclick="sendWhatsApp()">Enviar progresso ao professor</button>
    <button class="dark" onclick="showPhases()">Ver fases</button>`;
@@ -591,9 +583,7 @@ function finishPhase(){
   <div class="medal">💪</div>
   <div class="resultBig">Ainda não venceu a fase</div>
   <p><b>${state.name}</b>, você acertou ${state.score}/${p.questions.length}.</p>
-  <div class="notice">Regra do jogo: só passa de fase com 10 acertos. Revise os comentários e tente novamente.</div>
-  <button class="red" onclick="beginPhase(${state.currentPhase})">Refazer esta fase</button>
-  <button class="dark" onclick="showPhases()">Voltar às fases</button>`;
+  <div class="notice">Versão sem trava: você pode refazer a fase ou seguir para outra fase.</div>\n  <button class="red" onclick="beginPhase(${state.currentPhase})">Refazer esta fase</button>\n  ${state.currentPhase < phases.length-1 ? `<button class="green" onclick="beginPhase(${state.currentPhase+1})">Ir para próxima fase</button>` : ``}\n  <button class="dark" onclick="showPhases()">Voltar às fases</button>`;
  }
  document.getElementById("resultContent").innerHTML = html;
  document.getElementById("result").classList.remove("hidden");
@@ -636,5 +626,4 @@ load();
 </script>
 </body>
 </html>
-
 
